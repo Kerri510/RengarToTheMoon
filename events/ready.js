@@ -1,4 +1,4 @@
-const { Events, ChannelManager } = require('discord.js');
+const { Events } = require('discord.js');
 const path = require('node:path');
 const Activegamebot = require(path.join(__dirname, '../lolClasses/activegamebot'));
 
