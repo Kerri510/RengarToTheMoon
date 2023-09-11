@@ -36,7 +36,7 @@ class Activegamebot {
 						channel.send({ embeds: [await buildEmbed(response.data, account.ingamename, account.summonerId)] });
 					})
 					.catch(function(error) {
-
+						// console.log(error);
 					});
 			}
 		}
@@ -76,7 +76,6 @@ async function getRankBySummonerId(summonerId) {
 			// console.log(error);
 			returnValue = 'Error';
 		});
-	// await wait(100);
 	return returnValue;
 }
 
@@ -91,11 +90,10 @@ async function getMasteryOfChampBySummonerId(summonerId, champId) {
 			// console.log(error);
 			returnValue = '-';
 		});
-	// await wait(100);
 	return returnValue;
 }
 
-function nFormatter(num, digits = 0) {
+function nFormatter(num) {
 	const lookup = [
 		{ value: 1, symbol: '' },
 		{ value: 1e3, symbol: 'K' },
