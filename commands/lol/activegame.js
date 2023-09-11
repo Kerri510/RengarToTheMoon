@@ -14,8 +14,8 @@ const config = {
 };
 
 const List = require('collections/list');
-let winRate = new List();
-let gamesPlayed = new List();
+const winRate = new List();
+const gamesPlayed = new List();
 
 module.exports = {
 	cooldown: 5,
@@ -41,15 +41,16 @@ module.exports = {
 						await interaction.editReply({ embeds: [await buildEmbed(response.data, summonername, summonerID)] });
 					})
 					.catch(function(error) {
-						//console.log(error);
+						// console.log(error);
 						fehler = 'Nicht ingame!';
 					});
 
 			})
 			.catch(function(error) {
-				if (error.response.statusText==='Forbidden'){
+				if (error.response.statusText === 'Forbidden') {
 					fehler = 'Api Key abgelaufen';
-				}else {
+				}
+				else {
 					fehler = 'Summoner existiert nicht!';
 				}
 			});
@@ -79,7 +80,6 @@ async function getRankBySummonerId(summonerId) {
 					const foundRank = rankEmoji.find(rank => rank.id === rankTypes.tier);
 
 					returnValue = foundRank.emoji + ' ' + (rankTypes.tier === ('MASTER' || 'GRANDMASTER' || 'CHALLENGER') ? rankTypes.tier : rankTypes.tier + ' ' + rankTypes.rank) + ' ' + rankTypes.leaguePoints + ' LP';
-					//console.log(returnValue);
 				}
 			}
 			if (temp === winRate.length) {
@@ -90,10 +90,9 @@ async function getRankBySummonerId(summonerId) {
 			}
 		})
 		.catch(function(error) {
-			//console.log(error);
+			// console.log(error);
 			returnValue = 'Error';
 		});
-	//await wait(100);
 	return returnValue;
 }
 
@@ -102,17 +101,15 @@ async function getMasteryOfChampBySummonerId(summonerId, champId) {
 	await axios.get('https://euw1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/' + summonerId + '/by-champion/' + champId, config) // 2000 requests every 1 minutes
 		.then(function(response) {
 			returnValue = champMasteryLvl.find(mastery => mastery.id === response.data.championLevel.toString()).emoji + nFormatter(response.data.championPoints);
-			//console.log(returnValue);
 		})
 		.catch(function(error) {
-			//console.log(error);
+			// console.log(error);
 			returnValue = '-';
 		});
-	//await wait(100);
 	return returnValue;
 }
 
-function nFormatter(num, digits = 0) {
+function nFormatter(num) {
 	const lookup = [
 		{ value: 1, symbol: '' },
 		{ value: 1e3, symbol: 'K' },
@@ -127,10 +124,12 @@ function nFormatter(num, digits = 0) {
 	if (item) {
 		if (item.symbol === 'M' || item.symbol === 'B' || item.symbol === 'T') {
 			return (num / item.value).toFixed(1).replace(rx, '$1') + item.symbol;
-		} else {
+		}
+		else {
 			return (num / item.value).toFixed(0) + item.symbol;
 		}
-	} else {
+	}
+	else {
 		return '0';
 	}
 }
@@ -194,7 +193,7 @@ async function buildEmbed(gameData, summonername, summonerID) {
 					await getMasteryOfChampBySummonerId(gameData.participants[4].summonerId, gameData.participants[4].championId),
 				inline: true,
 			},
-			//{ name: '\u200B', value: '\u200B' },
+			// { name: '\u200B', value: '\u200B' },
 			{
 				name: gameData.participants[5].teamId === 100 ? 'Blue Team' : 'Red Team',
 				value: champs.find(emoji => emoji.key === gameData.participants[5].championId.toString()).id + ' ' + (gameData.participants[5].summonerId === summonerID ? '**__' + gameData.participants[5].summonerName + '__**' : gameData.participants[5].summonerName) + '\n' +

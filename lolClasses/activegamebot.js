@@ -17,9 +17,8 @@ const config = {
 	},
 };
 
-let winRate = new List();
-let gamesPlayed = new List();
-
+const winRate = new List();
+const gamesPlayed = new List();
 
 
 class Activegamebot {
@@ -63,7 +62,7 @@ async function getRankBySummonerId(summonerId) {
 					const foundRank = rankEmoji.find(rank => rank.id === rankTypes.tier);
 
 					returnValue = foundRank.emoji + ' ' + (rankTypes.tier === ('MASTER' || 'GRANDMASTER' || 'CHALLENGER') ? rankTypes.tier : rankTypes.tier + ' ' + rankTypes.rank) + ' ' + rankTypes.leaguePoints + ' LP';
-					//console.log(returnValue);
+					// console.log(returnValue);
 				}
 			}
 			if (temp === winRate.length) {
@@ -74,10 +73,10 @@ async function getRankBySummonerId(summonerId) {
 			}
 		})
 		.catch(function(error) {
-			//console.log(error);
+			// console.log(error);
 			returnValue = 'Error';
 		});
-	//await wait(100);
+	// await wait(100);
 	return returnValue;
 }
 
@@ -86,13 +85,13 @@ async function getMasteryOfChampBySummonerId(summonerId, champId) {
 	await axios.get('https://euw1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/' + summonerId + '/by-champion/' + champId, config) // 2000 requests every 1 minutes
 		.then(function(response) {
 			returnValue = champMasteryLvl.find(mastery => mastery.id === response.data.championLevel.toString()).emoji + nFormatter(response.data.championPoints);
-			//console.log(returnValue);
+			// console.log(returnValue);
 		})
 		.catch(function(error) {
-			//console.log(error);
+			// console.log(error);
 			returnValue = '-';
 		});
-	//await wait(100);
+	// await wait(100);
 	return returnValue;
 }
 
@@ -111,10 +110,12 @@ function nFormatter(num, digits = 0) {
 	if (item) {
 		if (item.symbol === 'M' || item.symbol === 'B' || item.symbol === 'T') {
 			return (num / item.value).toFixed(1).replace(rx, '$1') + item.symbol;
-		} else {
+		}
+		else {
 			return (num / item.value).toFixed(0) + item.symbol;
 		}
-	} else {
+	}
+	else {
 		return '0';
 	}
 }
@@ -152,60 +153,60 @@ async function buildEmbed(gameData, summonername, summonerID) {
 		.setTitle(getDescriptionByQueues(gameData.gameQueueConfigId) + ' | ' + summonername)
 		.setURL('https://www.op.gg/summoners/euw/' + summonername.replace(/ /g, '%20') + '/ingame')
 		.addFields({
-				name: gameData.participants[0].teamId === 100 ? 'Blue Team' : 'Red Team',
-				value: champs.find(emoji => emoji.key === gameData.participants[0].championId.toString()).id + ' ' + (gameData.participants[0].summonerId === summonerID ? '**__' + gameData.participants[0].summonerName + '__**' : gameData.participants[0].summonerName) + '\n' +
+			name: gameData.participants[0].teamId === 100 ? 'Blue Team' : 'Red Team',
+			value: champs.find(emoji => emoji.key === gameData.participants[0].championId.toString()).id + ' ' + (gameData.participants[0].summonerId === summonerID ? '**__' + gameData.participants[0].summonerName + '__**' : gameData.participants[0].summonerName) + '\n' +
 					champs.find(emoji => emoji.key === gameData.participants[1].championId.toString()).id + ' ' + (gameData.participants[1].summonerId === summonerID ? '**__' + gameData.participants[1].summonerName + '__**' : gameData.participants[1].summonerName) + '\n' +
 					champs.find(emoji => emoji.key === gameData.participants[2].championId.toString()).id + ' ' + (gameData.participants[2].summonerId === summonerID ? '**__' + gameData.participants[2].summonerName + '__**' : gameData.participants[2].summonerName) + '\n' +
 					champs.find(emoji => emoji.key === gameData.participants[3].championId.toString()).id + ' ' + (gameData.participants[3].summonerId === summonerID ? '**__' + gameData.participants[3].summonerName + '__**' : gameData.participants[3].summonerName) + '\n' +
 					champs.find(emoji => emoji.key === gameData.participants[4].championId.toString()).id + ' ' + (gameData.participants[4].summonerId === summonerID ? '**__' + gameData.participants[4].summonerName + '__**' : gameData.participants[4].summonerName),
-				inline: true,
-			},
-			{
-				name: 'Solo/Duo Rank | WR | Games Played',
-				value: await getRankBySummonerId(gameData.participants[0].summonerId) + ' | ' + winRate.shift() + ' | ' + gamesPlayed.shift() + '\n' +
+			inline: true,
+		},
+		{
+			name: 'Solo/Duo Rank | WR | Games Played',
+			value: await getRankBySummonerId(gameData.participants[0].summonerId) + ' | ' + winRate.shift() + ' | ' + gamesPlayed.shift() + '\n' +
 					await getRankBySummonerId(gameData.participants[1].summonerId) + ' | ' + winRate.shift() + ' | ' + gamesPlayed.shift() + '\n' +
 					await getRankBySummonerId(gameData.participants[2].summonerId) + ' | ' + winRate.shift() + ' | ' + gamesPlayed.shift() + '\n' +
 					await getRankBySummonerId(gameData.participants[3].summonerId) + ' | ' + winRate.shift() + ' | ' + gamesPlayed.shift() + '\n' +
 					await getRankBySummonerId(gameData.participants[4].summonerId) + ' | ' + winRate.shift() + ' | ' + gamesPlayed.shift(),
-				inline: true,
-			},
-			{
-				name: 'Mastery',
-				value: await getMasteryOfChampBySummonerId(gameData.participants[0].summonerId, gameData.participants[0].championId) + '\n' +
+			inline: true,
+		},
+		{
+			name: 'Mastery',
+			value: await getMasteryOfChampBySummonerId(gameData.participants[0].summonerId, gameData.participants[0].championId) + '\n' +
 					await getMasteryOfChampBySummonerId(gameData.participants[1].summonerId, gameData.participants[1].championId) + '\n' +
 					await getMasteryOfChampBySummonerId(gameData.participants[2].summonerId, gameData.participants[2].championId) + '\n' +
 					await getMasteryOfChampBySummonerId(gameData.participants[3].summonerId, gameData.participants[3].championId) + '\n' +
 					await getMasteryOfChampBySummonerId(gameData.participants[4].summonerId, gameData.participants[4].championId),
-				inline: true,
-			},
-			//{ name: '\u200B', value: '\u200B' },
-			{
-				name: gameData.participants[5].teamId === 100 ? 'Blue Team' : 'Red Team',
-				value: champs.find(emoji => emoji.key === gameData.participants[5].championId.toString()).id + ' ' + (gameData.participants[5].summonerId === summonerID ? '**__' + gameData.participants[5].summonerName + '__**' : gameData.participants[5].summonerName) + '\n' +
+			inline: true,
+		},
+		// { name: '\u200B', value: '\u200B' },
+		{
+			name: gameData.participants[5].teamId === 100 ? 'Blue Team' : 'Red Team',
+			value: champs.find(emoji => emoji.key === gameData.participants[5].championId.toString()).id + ' ' + (gameData.participants[5].summonerId === summonerID ? '**__' + gameData.participants[5].summonerName + '__**' : gameData.participants[5].summonerName) + '\n' +
 					champs.find(emoji => emoji.key === gameData.participants[6].championId.toString()).id + ' ' + (gameData.participants[6].summonerId === summonerID ? '**__' + gameData.participants[6].summonerName + '__**' : gameData.participants[6].summonerName) + '\n' +
 					champs.find(emoji => emoji.key === gameData.participants[7].championId.toString()).id + ' ' + (gameData.participants[7].summonerId === summonerID ? '**__' + gameData.participants[7].summonerName + '__**' : gameData.participants[7].summonerName) + '\n' +
 					champs.find(emoji => emoji.key === gameData.participants[8].championId.toString()).id + ' ' + (gameData.participants[8].summonerId === summonerID ? '**__' + gameData.participants[8].summonerName + '__**' : gameData.participants[8].summonerName) + '\n' +
 					champs.find(emoji => emoji.key === gameData.participants[9].championId.toString()).id + ' ' + (gameData.participants[9].summonerId === summonerID ? '**__' + gameData.participants[9].summonerName + '__**' : gameData.participants[9].summonerName),
-				inline: true,
-			},
-			{
-				name: 'Solo/Duo Rank | WR | Games Played',
-				value: await getRankBySummonerId(gameData.participants[5].summonerId) + ' | ' + winRate.shift() + ' | ' + gamesPlayed.shift() + '\n' +
+			inline: true,
+		},
+		{
+			name: 'Solo/Duo Rank | WR | Games Played',
+			value: await getRankBySummonerId(gameData.participants[5].summonerId) + ' | ' + winRate.shift() + ' | ' + gamesPlayed.shift() + '\n' +
 					await getRankBySummonerId(gameData.participants[6].summonerId) + ' | ' + winRate.shift() + ' | ' + gamesPlayed.shift() + '\n' +
 					await getRankBySummonerId(gameData.participants[7].summonerId) + ' | ' + winRate.shift() + ' | ' + gamesPlayed.shift() + '\n' +
 					await getRankBySummonerId(gameData.participants[8].summonerId) + ' | ' + winRate.shift() + ' | ' + gamesPlayed.shift() + '\n' +
 					await getRankBySummonerId(gameData.participants[9].summonerId) + ' | ' + winRate.shift() + ' | ' + gamesPlayed.shift(),
-				inline: true,
-			},
-			{
-				name: 'Mastery',
-				value: await getMasteryOfChampBySummonerId(gameData.participants[5].summonerId, gameData.participants[5].championId) + '\n' +
+			inline: true,
+		},
+		{
+			name: 'Mastery',
+			value: await getMasteryOfChampBySummonerId(gameData.participants[5].summonerId, gameData.participants[5].championId) + '\n' +
 					await getMasteryOfChampBySummonerId(gameData.participants[6].summonerId, gameData.participants[6].championId) + '\n' +
 					await getMasteryOfChampBySummonerId(gameData.participants[7].summonerId, gameData.participants[7].championId) + '\n' +
 					await getMasteryOfChampBySummonerId(gameData.participants[8].summonerId, gameData.participants[8].championId) + '\n' +
 					await getMasteryOfChampBySummonerId(gameData.participants[9].summonerId, gameData.participants[9].championId),
-				inline: true,
-			},
+			inline: true,
+		},
 		)
 		.setFooter({ text: 'Spiel gestartet am ' + epochMillisecondsToDateTime(gameData.gameStartTime) + ' Aktuelle Dauer des Spiels: ' + secondsToMMSS(gameData.gameLength) });
 }
